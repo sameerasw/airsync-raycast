@@ -140,25 +140,25 @@ export default function Command() {
               title={isPlaying ? "Pause" : "Play"}
               onAction={() => handleMediaControl("toggle")}
               icon={isPlaying ? Icon.Pause : Icon.Play}
-              shortcut={{ modifiers: ["cmd"], key: "p" }}
+              shortcut={{ modifiers: ["cmd", "shift"], key: "p" }}
             />
             <Action
               title="Next Track"
               onAction={() => handleMediaControl("next")}
               icon={Icon.Forward}
-              shortcut={{ modifiers: ["cmd"], key: "n" }}
+              shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
             />
             <Action
               title="Previous Track"
               onAction={() => handleMediaControl("previous")}
               icon={Icon.Rewind}
-              shortcut={{ modifiers: ["cmd"], key: "b" }}
+              shortcut={{ modifiers: ["cmd", "shift"], key: "b" }}
             />
             <Action
               title={media.like_status === "liked" ? "Unlike" : "Like Track"}
               onAction={() => handleMediaControl("like")}
               icon={Icon.Heart}
-              shortcut={{ modifiers: ["cmd"], key: "l" }}
+              shortcut={{ modifiers: ["cmd", "shift"], key: "l" }}
             />
           </ActionPanel.Section>
           <ActionPanel.Section>
