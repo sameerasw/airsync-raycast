@@ -1,10 +1,47 @@
-import { Action, ActionPanel, Detail, Icon, Color } from "@raycast/api";
+import { Action, ActionPanel, Detail, Icon, Color, showToast, Toast } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
-import { getMedia } from "./utils/applescript";
+import { getMedia, mediaControl, MediaControlResponse } from "./utils/applescript";
 import React from "react";
 
 export default function Command() {
   const { data: media, isLoading, error, revalidate } = usePromise(getMedia);
+
+  const handleMediaControl = async (action: "toggle" | "next" | "previous" | "like") => {
+    try {
+      const response = await mediaControl(action);
+
+      // Check if response is a JSON object or error string
+      if (typeof response === "string") {
+        // It's an error message
+        await showToast({
+          style: Toast.Style.Failure,
+          title: "Media Control Failed",
+          message: response,
+        });
+      } else if (response.status === "success") {
+        await showToast({
+          style: Toast.Style.Success,
+          title: "Success",
+          message: response.message,
+        });
+        // Wait a bit for AirSync to update its state before refetching
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await revalidate();
+      } else {
+        await showToast({
+          style: Toast.Style.Failure,
+          title: "Failed",
+          message: response.message,
+        });
+      }
+    } catch (error) {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Media Control Failed",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
 
   if (error) {
     return (
@@ -98,19 +135,47 @@ export default function Command() {
       }
       actions={
         <ActionPanel>
-          <Action
-            title="Refresh"
-            onAction={revalidate}
-            icon={Icon.ArrowClockwise}
-            shortcut={{ modifiers: ["cmd"], key: "r" }}
-          />
-          {hasTitle && (
-            <Action.CopyToClipboard
-              title="Copy Track Info"
-              content={`${title} - ${artist}`}
-              shortcut={{ modifiers: ["cmd"], key: "c" }}
+          <ActionPanel.Section title="Playback Controls">
+            <Action
+              title={isPlaying ? "Pause" : "Play"}
+              onAction={() => handleMediaControl("toggle")}
+              icon={isPlaying ? Icon.Pause : Icon.Play}
+              shortcut={{ modifiers: ["cmd"], key: "p" }}
             />
-          )}
+            <Action
+              title="Next Track"
+              onAction={() => handleMediaControl("next")}
+              icon={Icon.Forward}
+              shortcut={{ modifiers: ["cmd"], key: "n" }}
+            />
+            <Action
+              title="Previous Track"
+              onAction={() => handleMediaControl("previous")}
+              icon={Icon.Rewind}
+              shortcut={{ modifiers: ["cmd"], key: "b" }}
+            />
+            <Action
+              title={media.like_status === "liked" ? "Unlike" : "Like Track"}
+              onAction={() => handleMediaControl("like")}
+              icon={Icon.Heart}
+              shortcut={{ modifiers: ["cmd"], key: "l" }}
+            />
+          </ActionPanel.Section>
+          <ActionPanel.Section>
+            <Action
+              title="Refresh"
+              onAction={revalidate}
+              icon={Icon.ArrowClockwise}
+              shortcut={{ modifiers: ["cmd"], key: "r" }}
+            />
+            {hasTitle && (
+              <Action.CopyToClipboard
+                title="Copy Track Info"
+                content={`${title} - ${artist}`}
+                shortcut={{ modifiers: ["cmd"], key: "c" }}
+              />
+            )}
+          </ActionPanel.Section>
         </ActionPanel>
       }
     />

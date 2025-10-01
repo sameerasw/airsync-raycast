@@ -53,6 +53,18 @@ export interface MirrorResponse {
   error?: string;
 }
 
+export interface MediaControlResponse {
+  status: string;
+  action: string;
+  message: string;
+  current_media?: {
+    title: string;
+    artist: string;
+    is_playing: boolean;
+    like_status: string;
+  };
+}
+
 export async function getStatus(): Promise<DeviceStatus | null> {
   try {
     const result = await runAppleScript('tell application "AirSync" to get status');
@@ -102,13 +114,29 @@ export async function getNotifications(): Promise<Notification[]> {
 export async function getMedia(): Promise<MediaInfo | null> {
   try {
     const result = await runAppleScript('tell application "AirSync" to get media');
-    if (typeof result === "string" && !result.startsWith("{")) {
+    if (result.includes("No media playing") || result.includes("No device connected")) {
       return null;
     }
     return JSON.parse(result);
   } catch (error) {
     console.error("Failed to get media:", error);
-    throw new Error("Failed to get media info. Make sure AirSync is running.");
+    throw new Error("Failed to get media information. Make sure AirSync is running.");
+  }
+}
+
+export async function mediaControl(action: "toggle" | "next" | "previous" | "like"): Promise<MediaControlResponse | string> {
+  try {
+    const result = await runAppleScript(`tell application "AirSync" to media control "${action}"`);
+    // Try to parse as JSON, if it fails, it's an error message
+    try {
+      return JSON.parse(result);
+    } catch (parseError) {
+      // If parsing fails, return the error message as string
+      return result;
+    }
+  } catch (error) {
+    console.error(`Failed to ${action} media:`, error);
+    throw new Error(`Failed to control media. Make sure AirSync is running.`);
   }
 }
 
