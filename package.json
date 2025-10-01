@@ -43,7 +43,7 @@
     },
     {
       "name": "launch-mirroring",
-      "title": "Launch Mirroring",
+      "title": "Android Mirror",
       "description": "Launch full device mirroring",
       "mode": "no-view"
     },
