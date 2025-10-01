@@ -23,6 +23,12 @@ declare namespace Preferences {
   export type Notifications = ExtensionPreferences & {}
   /** Preferences accessible in the `media` command */
   export type Media = ExtensionPreferences & {}
+  /** Preferences accessible in the `launch-mirroring` command */
+  export type LaunchMirroring = ExtensionPreferences & {}
+  /** Preferences accessible in the `desktop-mode` command */
+  export type DesktopMode = ExtensionPreferences & {}
+  /** Preferences accessible in the `mirror-app` command */
+  export type MirrorApp = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -36,5 +42,11 @@ declare namespace Arguments {
   export type Notifications = {}
   /** Arguments passed to the `media` command */
   export type Media = {}
+  /** Arguments passed to the `launch-mirroring` command */
+  export type LaunchMirroring = {}
+  /** Arguments passed to the `desktop-mode` command */
+  export type DesktopMode = {}
+  /** Arguments passed to the `mirror-app` command */
+  export type MirrorApp = {}
 }
 

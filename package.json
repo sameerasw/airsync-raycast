@@ -40,6 +40,24 @@
       "title": "Media Controls",
       "description": "View and control media playback on your device",
       "mode": "view"
+    },
+    {
+      "name": "launch-mirroring",
+      "title": "Launch Mirroring",
+      "description": "Launch full device mirroring",
+      "mode": "no-view"
+    },
+    {
+      "name": "desktop-mode",
+      "title": "Desktop Mode",
+      "description": "Launch desktop mode mirroring",
+      "mode": "no-view"
+    },
+    {
+      "name": "mirror-app",
+      "title": "Mirror App",
+      "description": "Browse and mirror a specific app",
+      "mode": "view"
     }
   ],
   "dependencies": {

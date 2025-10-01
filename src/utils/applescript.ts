@@ -28,6 +28,31 @@ export interface MediaInfo {
   album_art_base64?: string;
 }
 
+export interface App {
+  package_name: string;
+  name: string;
+  system_app: boolean;
+  listening: boolean;
+  icon?: string;
+}
+
+export interface AppsResponse {
+  apps: App[];
+  count: number;
+}
+
+export interface MirrorResponse {
+  success: boolean;
+  message: string;
+  device?: string;
+  ip?: string;
+  app_name?: string;
+  package_name?: string;
+  mode?: string;
+  note?: string;
+  error?: string;
+}
+
 export async function getStatus(): Promise<DeviceStatus | null> {
   try {
     const result = await runAppleScript('tell application "AirSync" to get status');
@@ -84,5 +109,45 @@ export async function getMedia(): Promise<MediaInfo | null> {
   } catch (error) {
     console.error("Failed to get media:", error);
     throw new Error("Failed to get media info. Make sure AirSync is running.");
+  }
+}
+
+export async function launchMirroring(): Promise<MirrorResponse> {
+  try {
+    const result = await runAppleScript('tell application "AirSync" to launch mirroring');
+    return JSON.parse(result);
+  } catch (error) {
+    console.error("Failed to launch mirroring:", error);
+    throw new Error("Failed to launch mirroring. Make sure AirSync is running.");
+  }
+}
+
+export async function getApps(): Promise<AppsResponse> {
+  try {
+    const result = await runAppleScript('tell application "AirSync" to get apps');
+    return JSON.parse(result);
+  } catch (error) {
+    console.error("Failed to get apps:", error);
+    throw new Error("Failed to get apps. Make sure AirSync is running.");
+  }
+}
+
+export async function mirrorApp(packageName: string): Promise<MirrorResponse> {
+  try {
+    const result = await runAppleScript(`tell application "AirSync" to mirror app "${packageName}"`);
+    return JSON.parse(result);
+  } catch (error) {
+    console.error("Failed to mirror app:", error);
+    throw new Error("Failed to mirror app. Make sure AirSync is running.");
+  }
+}
+
+export async function launchDesktopMode(): Promise<MirrorResponse> {
+  try {
+    const result = await runAppleScript('tell application "AirSync" to desktop mode');
+    return JSON.parse(result);
+  } catch (error) {
+    console.error("Failed to launch desktop mode:", error);
+    throw new Error("Failed to launch desktop mode. Make sure AirSync is running.");
   }
 }
