@@ -145,7 +145,7 @@ export async function notificationAction(
     // Try to parse as JSON, if it fails, it's an error message
     try {
       return JSON.parse(result);
-    } catch (parseError) {
+    } catch {
       return result;
     }
   } catch (error) {
@@ -160,7 +160,7 @@ export async function dismissNotification(notificationId: string): Promise<Dismi
     // Try to parse as JSON, if it fails, it's an error message
     try {
       return JSON.parse(result);
-    } catch (parseError) {
+    } catch {
       return result;
     }
   } catch (error) {
@@ -190,7 +190,7 @@ export async function mediaControl(
     // Try to parse as JSON, if it fails, it's an error message
     try {
       return JSON.parse(result);
-    } catch (parseError) {
+    } catch {
       // If parsing fails, return the error message as string
       return result;
     }
@@ -216,7 +216,7 @@ export async function getApps(): Promise<AppsResponse> {
     // Try to parse as JSON, if it fails, the result might be an error message
     try {
       return JSON.parse(result);
-    } catch (parseError) {
+    } catch {
       // If parsing fails, throw the actual message from AirSync
       throw new Error(result || "Failed to get apps. Make sure AirSync is running.");
     }
