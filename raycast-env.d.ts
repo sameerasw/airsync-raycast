@@ -29,6 +29,8 @@ declare namespace Preferences {
   export type DesktopMode = ExtensionPreferences & {}
   /** Preferences accessible in the `mirror-app` command */
   export type MirrorApp = ExtensionPreferences & {}
+  /** Preferences accessible in the `connect-adb` command */
+  export type ConnectAdb = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -48,5 +50,7 @@ declare namespace Arguments {
   export type DesktopMode = {}
   /** Arguments passed to the `mirror-app` command */
   export type MirrorApp = {}
+  /** Arguments passed to the `connect-adb` command */
+  export type ConnectAdb = {}
 }
 

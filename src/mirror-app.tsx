@@ -1,6 +1,6 @@
 import { Action, ActionPanel, List, Icon, showToast, Toast, Color, closeMainWindow } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
-import { getApps, mirrorApp, App } from "./utils/applescript";
+import { getApps, mirrorApp, connectAdb, App } from "./utils/applescript";
 import React, { useState, useEffect } from "react";
 
 export default function Command() {
@@ -44,6 +44,40 @@ export default function Command() {
       });
     } finally {
       setSelectedApp(null);
+    }
+  };
+
+  const handleConnectAdb = async () => {
+    try {
+      const response = await connectAdb();
+      
+      if (response === "Connected") {
+        await showToast({
+          style: Toast.Style.Success,
+          title: "ADB Connected",
+          message: response,
+        });
+        // Refresh the apps list after connecting
+        revalidate();
+      } else if (response === "ADB connection already in progress") {
+        await showToast({
+          style: Toast.Style.Animated,
+          title: "Connecting",
+          message: response,
+        });
+      } else {
+        await showToast({
+          style: Toast.Style.Failure,
+          title: "Failed to connect ADB",
+          message: response,
+        });
+      }
+    } catch (error) {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Failed to connect ADB",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   };
 
@@ -105,6 +139,12 @@ export default function Command() {
                   title="Mirror App"
                   icon={Icon.Monitor}
                   onAction={() => handleMirrorApp(app)}
+                />
+                <Action
+                  title="Connect ADB"
+                  icon={Icon.Link}
+                  onAction={handleConnectAdb}
+                  shortcut={{ modifiers: ["cmd"], key: "a" }}
                 />
                 <Action.CopyToClipboard
                   title="Copy Package Name"

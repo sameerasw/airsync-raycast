@@ -58,6 +58,12 @@
       "title": "Mirror App",
       "description": "Browse and mirror a specific app",
       "mode": "view"
+    },
+    {
+      "name": "connect-adb",
+      "title": "Connect ADB",
+      "description": "Connect to device via ADB for mirroring",
+      "mode": "no-view"
     }
   ],
   "dependencies": {

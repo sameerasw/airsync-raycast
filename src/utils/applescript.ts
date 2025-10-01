@@ -157,3 +157,13 @@ export async function launchDesktopMode(): Promise<MirrorResponse> {
     throw new Error("Failed to launch desktop mode. Make sure AirSync is running.");
   }
 }
+
+export async function connectAdb(): Promise<string> {
+  try {
+    const result = await runAppleScript('tell application "AirSync" to connect adb');
+    return result;
+  } catch (error) {
+    console.error("Failed to connect ADB:", error);
+    throw new Error("Failed to connect ADB. Make sure AirSync is running.");
+  }
+}
