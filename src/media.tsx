@@ -39,84 +39,51 @@ export default function Command() {
   const isPlaying = media.is_playing === "true";
   const isMuted = media.is_muted === "true";
   const hasTitle = media.title && media.title.trim() !== "";
-  
+
   const title = hasTitle ? media.title : "No title";
   const artist = media.artist && media.artist.trim() !== "" ? media.artist : "Unknown artist";
-  const album = media.album && media.album.trim() !== "" ? media.album : "";
-  
+
   // Volume bar visualization
   const volumeLevel = parseInt(media.volume) || 0;
   const volumeBar = "█".repeat(Math.floor(volumeLevel / 5)) + "░".repeat(20 - Math.floor(volumeLevel / 5));
-  
-  // Build the player UI
-  const markdown = `
-# 🎵 Now Playing
 
----
+  // Album art
+  const hasAlbumArt = media.album_art_base64 && media.album_art_base64.trim() !== "";
 
-## ${title}
-
-### ${artist}${album ? ` • ${album}` : ""}
-
----
-
-### Playback
-
-${isPlaying ? "▶️ **Playing**" : "⏸️ **Paused**"}
-
----
-
-### Volume ${isMuted ? "🔇" : "🔊"}
-
-\`\`\`
-${volumeBar} ${volumeLevel}%
-\`\`\`
-
-${isMuted ? "_Muted_" : ""}
-
----
-
-### Like Status
-
-${media.like_status === "liked" ? "❤️ Liked" : media.like_status === "disliked" ? "💔 Disliked" : "🤍 Not rated"}
-`;
+  // Build the player UI with album art in markdown
+  const markdown = hasAlbumArt
+    ? `<img src="data:image/jpeg;base64,${media.album_art_base64}" alt="Album Art" width="300" />`
+    : undefined;
 
   return (
     <Detail
       markdown={markdown}
       metadata={
         <Detail.Metadata>
-          <Detail.Metadata.Label 
-            title="Track" 
-            text={title} 
+          <Detail.Metadata.Label
+            title="Track"
+            text={title}
             icon={{ source: Icon.Music, tintColor: Color.Purple }}
           />
-          <Detail.Metadata.Label 
-            title="Artist" 
+          <Detail.Metadata.Label
+            title="Artist"
             text={artist}
             icon={{ source: Icon.Person, tintColor: Color.Blue }}
           />
-          {album && (
-            <Detail.Metadata.Label 
-              title="Album" 
-              text={album}
-              icon={{ source: Icon.Cd, tintColor: Color.Orange }}
-            />
-          )}
           <Detail.Metadata.Separator />
           <Detail.Metadata.Label
             title="Status"
             text={isPlaying ? "Playing" : "Paused"}
-            icon={{ 
+            icon={{
               source: isPlaying ? Icon.Play : Icon.Pause,
               tintColor: isPlaying ? Color.Green : Color.Orange
             }}
           />
           <Detail.Metadata.Separator />
-          <Detail.Metadata.Label 
-            title="Volume" 
+          <Detail.Metadata.Label
+            title="Volume"
             text={`${volumeLevel}%`}
-            icon={{ 
+            icon={{
               source: isMuted ? Icon.SpeakerOff : Icon.SpeakerOn,
               tintColor: isMuted ? Color.Red : Color.Green
             }}
@@ -131,15 +98,15 @@ ${media.like_status === "liked" ? "❤️ Liked" : media.like_status === "dislik
       }
       actions={
         <ActionPanel>
-          <Action 
-            title="Refresh" 
-            onAction={revalidate} 
+          <Action
+            title="Refresh"
+            onAction={revalidate}
             icon={Icon.ArrowClockwise}
             shortcut={{ modifiers: ["cmd"], key: "r" }}
           />
           {hasTitle && (
-            <Action.CopyToClipboard 
-              title="Copy Track Info" 
+            <Action.CopyToClipboard
+              title="Copy Track Info"
               content={`${title} - ${artist}`}
               shortcut={{ modifiers: ["cmd"], key: "c" }}
             />
@@ -149,4 +116,3 @@ ${media.like_status === "liked" ? "❤️ Liked" : media.like_status === "dislik
     />
   );
 }
-

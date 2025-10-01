@@ -14,16 +14,18 @@ export interface Notification {
   title: string;
   body: string;
   app: string;
+  package?: string;
+  app_icon_base64?: string;
 }
 
 export interface MediaInfo {
   title: string;
   artist: string;
-  album?: string;
   is_playing: string;
   volume: string;
   is_muted: string;
   like_status: string;
+  album_art_base64?: string;
 }
 
 export async function getStatus(): Promise<DeviceStatus | null> {

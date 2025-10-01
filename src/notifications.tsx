@@ -46,41 +46,51 @@ export default function Command() {
 
   return (
     <List isLoading={isLoading}>
-      {notifications.map((notification: Notification) => (
-        <List.Item
-          key={notification.id}
-          icon={Icon.Bell}
-          title={notification.title || "No Title"}
-          subtitle={notification.app}
-          accessories={[{ text: notification.app }]}
-          detail={
-            <List.Item.Detail
-              markdown={`# ${notification.title}\n\n${notification.body}`}
-              metadata={
-                <List.Item.Detail.Metadata>
-                  <List.Item.Detail.Metadata.Label title="App" text={notification.app} icon={Icon.AppWindow} />
-                  <List.Item.Detail.Metadata.Separator />
-                  <List.Item.Detail.Metadata.Label title="Title" text={notification.title} />
-                  <List.Item.Detail.Metadata.Label title="Body" text={notification.body} />
-                  <List.Item.Detail.Metadata.Separator />
-                  <List.Item.Detail.Metadata.Label title="ID" text={notification.id} />
-                </List.Item.Detail.Metadata>
-              }
-            />
-          }
-          actions={
-            <ActionPanel>
-              <Action.CopyToClipboard title="Copy Body" content={notification.body} />
-              <Action.CopyToClipboard
-                title="Copy All"
-                content={`${notification.title}\n${notification.body}\n\nApp: ${notification.app}`}
-                shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
+      {notifications.map((notification: Notification) => {
+        // Create app icon from base64 or use default
+        const appIcon = notification.app_icon_base64
+          ? `data:image/png;base64,${notification.app_icon_base64}`
+          : Icon.Bell;
+
+        return (
+          <List.Item
+            key={notification.id}
+            icon={appIcon}
+            title={notification.title || "No Title"}
+            subtitle={notification.app}
+            accessories={[{ text: notification.app }]}
+            detail={
+              <List.Item.Detail
+                markdown={`# ${notification.title}\n\n${notification.body}`}
+                metadata={
+                  <List.Item.Detail.Metadata>
+                    <List.Item.Detail.Metadata.Label title="App" text={notification.app} icon={Icon.AppWindow} />
+                    {notification.package && (
+                      <List.Item.Detail.Metadata.Label title="Package" text={notification.package} />
+                    )}
+                    <List.Item.Detail.Metadata.Separator />
+                    <List.Item.Detail.Metadata.Label title="Title" text={notification.title} />
+                    <List.Item.Detail.Metadata.Label title="Body" text={notification.body} />
+                    <List.Item.Detail.Metadata.Separator />
+                    <List.Item.Detail.Metadata.Label title="ID" text={notification.id} />
+                  </List.Item.Detail.Metadata>
+                }
               />
-              <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} shortcut={{ modifiers: ["cmd"], key: "r" }} />
-            </ActionPanel>
-          }
-        />
-      ))}
+            }
+            actions={
+              <ActionPanel>
+                <Action.CopyToClipboard title="Copy Body" content={notification.body} />
+                <Action.CopyToClipboard
+                  title="Copy All"
+                  content={`${notification.title}\n${notification.body}\n\nApp: ${notification.app}`}
+                  shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
+                />
+                <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} shortcut={{ modifiers: ["cmd"], key: "r" }} />
+              </ActionPanel>
+            }
+          />
+        );
+      })}
     </List>
   );
 }
