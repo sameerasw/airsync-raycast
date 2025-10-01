@@ -9,13 +9,36 @@ export interface DeviceStatus {
   device_version: string;
 }
 
+export interface NotificationAction {
+  name: string;
+  type: "reply" | "button";
+}
+
 export interface Notification {
   id: string;
   title: string;
   body: string;
   app: string;
   package?: string;
+  nid?: string;
+  actions?: NotificationAction[];
   app_icon_base64?: string;
+}
+
+export interface NotificationActionResponse {
+  status: string;
+  message: string;
+  notification_id: string;
+  action_name: string;
+  reply_text?: string;
+  notification_title: string;
+}
+
+export interface DismissNotificationResponse {
+  status: string;
+  message: string;
+  notification_id: string;
+  notification_title: string;
 }
 
 export interface MediaInfo {
@@ -108,6 +131,43 @@ export async function getNotifications(): Promise<Notification[]> {
   } catch (error) {
     console.error("Failed to get notifications:", error);
     throw new Error("Failed to get notifications. Make sure AirSync is running.");
+  }
+}
+
+export async function notificationAction(
+  notificationId: string,
+  actionName: string,
+  replyText?: string
+): Promise<NotificationActionResponse | string> {
+  try {
+    const actionString = replyText
+      ? `${notificationId}|${actionName}|${replyText}`
+      : `${notificationId}|${actionName}`;
+    const result = await runAppleScript(`tell application "AirSync" to notification action "${actionString}"`);
+    // Try to parse as JSON, if it fails, it's an error message
+    try {
+      return JSON.parse(result);
+    } catch (parseError) {
+      return result;
+    }
+  } catch (error) {
+    console.error("Failed to perform notification action:", error);
+    throw new Error("Failed to perform notification action. Make sure AirSync is running.");
+  }
+}
+
+export async function dismissNotification(notificationId: string): Promise<DismissNotificationResponse | string> {
+  try {
+    const result = await runAppleScript(`tell application "AirSync" to dismiss notification "${notificationId}"`);
+    // Try to parse as JSON, if it fails, it's an error message
+    try {
+      return JSON.parse(result);
+    } catch (parseError) {
+      return result;
+    }
+  } catch (error) {
+    console.error("Failed to dismiss notification:", error);
+    throw new Error("Failed to dismiss notification. Make sure AirSync is running.");
   }
 }
 
