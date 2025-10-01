@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Detail, Icon } from "@raycast/api";
+import { Action, ActionPanel, Detail, Icon, Color } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import { getMedia } from "./utils/applescript";
 import React from "react";
@@ -39,26 +39,46 @@ export default function Command() {
   const isPlaying = media.is_playing === "true";
   const isMuted = media.is_muted === "true";
   const hasTitle = media.title && media.title.trim() !== "";
-  const playingIcon = isPlaying ? "▶️" : "⏸️";
-  const volumeIcon = isMuted ? "🔇" : "🔊";
-  const likeIcon = media.like_status === "liked" ? "❤️" : media.like_status === "disliked" ? "💔" : "🤍";
-
+  
   const title = hasTitle ? media.title : "No title";
   const artist = media.artist && media.artist.trim() !== "" ? media.artist : "Unknown artist";
-  const album = media.album && media.album.trim() !== "" ? media.album : undefined;
-
+  const album = media.album && media.album.trim() !== "" ? media.album : "";
+  
+  // Volume bar visualization
+  const volumeLevel = parseInt(media.volume) || 0;
+  const volumeBar = "█".repeat(Math.floor(volumeLevel / 5)) + "░".repeat(20 - Math.floor(volumeLevel / 5));
+  
+  // Build the player UI
   const markdown = `
-# 🎵 ${title}
-
-${artist ? `**${artist}**` : ""}${album ? ` · ${album}` : ""}
+# 🎵 Now Playing
 
 ---
 
-${playingIcon} **Status:** ${isPlaying ? "Playing" : "Paused"}
+## ${title}
 
-${volumeIcon} **Volume:** ${media.volume}% ${isMuted ? "(Muted)" : ""}
+### ${artist}${album ? ` • ${album}` : ""}
 
-${likeIcon} **Like Status:** ${media.like_status === "liked" ? "Liked" : media.like_status === "disliked" ? "Disliked" : "None"}
+---
+
+### Playback
+
+${isPlaying ? "▶️ **Playing**" : "⏸️ **Paused**"}
+
+---
+
+### Volume ${isMuted ? "🔇" : "🔊"}
+
+\`\`\`
+${volumeBar} ${volumeLevel}%
+\`\`\`
+
+${isMuted ? "_Muted_" : ""}
+
+---
+
+### Like Status
+
+${media.like_status === "liked" ? "❤️ Liked" : media.like_status === "disliked" ? "💔 Disliked" : "🤍 Not rated"}
 `;
 
   return (
@@ -66,38 +86,67 @@ ${likeIcon} **Like Status:** ${media.like_status === "liked" ? "Liked" : media.l
       markdown={markdown}
       metadata={
         <Detail.Metadata>
-          <Detail.Metadata.Label title="Title" text={title} icon={Icon.Music} />
-          {media.artist && media.artist.trim() !== "" && (
-            <Detail.Metadata.Label title="Artist" text={artist} icon={Icon.Person} />
+          <Detail.Metadata.Label 
+            title="Track" 
+            text={title} 
+            icon={{ source: Icon.Music, tintColor: Color.Purple }}
+          />
+          <Detail.Metadata.Label 
+            title="Artist" 
+            text={artist}
+            icon={{ source: Icon.Person, tintColor: Color.Blue }}
+          />
+          {album && (
+            <Detail.Metadata.Label 
+              title="Album" 
+              text={album}
+              icon={{ source: Icon.Cd, tintColor: Color.Orange }}
+            />
           )}
-          {album && <Detail.Metadata.Label title="Album" text={album} icon={Icon.Cd} />}
           <Detail.Metadata.Separator />
           <Detail.Metadata.Label
             title="Status"
             text={isPlaying ? "Playing" : "Paused"}
-            icon={isPlaying ? Icon.Play : Icon.Pause}
+            icon={{ 
+              source: isPlaying ? Icon.Play : Icon.Pause,
+              tintColor: isPlaying ? Color.Green : Color.Orange
+            }}
           />
           <Detail.Metadata.Separator />
-          <Detail.Metadata.Label title="Volume" text={`${media.volume}%`} icon={Icon.SpeakerOn} />
-          <Detail.Metadata.Label
-            title="Muted"
-            text={isMuted ? "Yes" : "No"}
-            icon={isMuted ? Icon.SpeakerOff : Icon.SpeakerOn}
+          <Detail.Metadata.Label 
+            title="Volume" 
+            text={`${volumeLevel}%`}
+            icon={{ 
+              source: isMuted ? Icon.SpeakerOff : Icon.SpeakerOn,
+              tintColor: isMuted ? Color.Red : Color.Green
+            }}
           />
-          <Detail.Metadata.Separator />
-          <Detail.Metadata.Label
-            title="Like Status"
-            text={media.like_status === "liked" ? "Liked" : media.like_status === "disliked" ? "Disliked" : "None"}
-            icon={media.like_status === "liked" ? Icon.Heart : Icon.HeartDisabled}
-          />
+          <Detail.Metadata.TagList title="Like">
+            <Detail.Metadata.TagList.Item
+              text={media.like_status === "liked" ? "Liked" : media.like_status === "disliked" ? "Disliked" : "Not rated"}
+              color={media.like_status === "liked" ? Color.Red : media.like_status === "disliked" ? Color.Blue : Color.SecondaryText}
+            />
+          </Detail.Metadata.TagList>
         </Detail.Metadata>
       }
       actions={
         <ActionPanel>
-          <Action title="Refresh" onAction={revalidate} icon={Icon.ArrowClockwise} />
-          {hasTitle && <Action.CopyToClipboard title="Copy Track Info" content={`${title} - ${artist}`} />}
+          <Action 
+            title="Refresh" 
+            onAction={revalidate} 
+            icon={Icon.ArrowClockwise}
+            shortcut={{ modifiers: ["cmd"], key: "r" }}
+          />
+          {hasTitle && (
+            <Action.CopyToClipboard 
+              title="Copy Track Info" 
+              content={`${title} - ${artist}`}
+              shortcut={{ modifiers: ["cmd"], key: "c" }}
+            />
+          )}
         </ActionPanel>
       }
     />
   );
 }
+

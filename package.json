@@ -21,13 +21,13 @@
       "name": "disconnect",
       "title": "Disconnect Device",
       "description": "Disconnect from the connected device",
-      "mode": "view"
+      "mode": "no-view"
     },
     {
       "name": "reconnect",
       "title": "Reconnect Device",
       "description": "Reconnect to the last connected device",
-      "mode": "view"
+      "mode": "no-view"
     },
     {
       "name": "notifications",
