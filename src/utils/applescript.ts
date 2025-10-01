@@ -140,9 +140,7 @@ export async function notificationAction(
   replyText?: string
 ): Promise<NotificationActionResponse | string> {
   try {
-    const actionString = replyText
-      ? `${notificationId}|${actionName}|${replyText}`
-      : `${notificationId}|${actionName}`;
+    const actionString = replyText ? `${notificationId}|${actionName}|${replyText}` : `${notificationId}|${actionName}`;
     const result = await runAppleScript(`tell application "AirSync" to notification action "${actionString}"`);
     // Try to parse as JSON, if it fails, it's an error message
     try {
@@ -184,7 +182,9 @@ export async function getMedia(): Promise<MediaInfo | null> {
   }
 }
 
-export async function mediaControl(action: "toggle" | "next" | "previous" | "like"): Promise<MediaControlResponse | string> {
+export async function mediaControl(
+  action: "toggle" | "next" | "previous" | "like"
+): Promise<MediaControlResponse | string> {
   try {
     const result = await runAppleScript(`tell application "AirSync" to media control "${action}"`);
     // Try to parse as JSON, if it fails, it's an error message

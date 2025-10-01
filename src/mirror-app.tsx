@@ -1,7 +1,7 @@
-import { Action, ActionPanel, List, Icon, showToast, Toast, Color, closeMainWindow } from "@raycast/api";
+import { Action, ActionPanel, List, Icon, showToast, Toast } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import { getApps, mirrorApp, connectAdb, App } from "./utils/applescript";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 export default function Command() {
   const { data: appsData, isLoading, error, revalidate } = usePromise(getApps);
@@ -16,11 +16,9 @@ export default function Command() {
       });
     }
   }, [error]);
-  const [selectedApp, setSelectedApp] = useState<string | null>(null);
 
   const handleMirrorApp = async (app: App) => {
     try {
-      setSelectedApp(app.package_name);
       const response = await mirrorApp(app.package_name);
 
       if (response.success) {
@@ -42,15 +40,13 @@ export default function Command() {
         title: "Failed to mirror app",
         message: error instanceof Error ? error.message : "Unknown error",
       });
-    } finally {
-      setSelectedApp(null);
     }
   };
 
   const handleConnectAdb = async () => {
     try {
       const response = await connectAdb();
-      
+
       if (response === "Connected") {
         await showToast({
           style: Toast.Style.Success,
@@ -111,15 +107,9 @@ export default function Command() {
   });
 
   return (
-    <List
-      isLoading={isLoading}
-      searchBarPlaceholder="Search apps..."
-      isShowingDetail
-    >
+    <List isLoading={isLoading} searchBarPlaceholder="Search apps..." isShowingDetail>
       {sortedApps.map((app: App) => {
-        const appIcon = app.icon
-          ? `data:image/png;base64,${app.icon}`
-          : Icon.AppWindow;
+        const appIcon = app.icon ? `data:image/png;base64,${app.icon}` : Icon.AppWindow;
 
         const isSystemApp = app.system_app;
 
@@ -135,13 +125,9 @@ export default function Command() {
             }
             actions={
               <ActionPanel>
+                <Action title="Mirror App" icon={Icon.Monitor} onAction={() => handleMirrorApp(app)} />
                 <Action
-                  title="Mirror App"
-                  icon={Icon.Monitor}
-                  onAction={() => handleMirrorApp(app)}
-                />
-                <Action
-                  title="Connect ADB"
+                  title="Connect Adb"
                   icon={Icon.Link}
                   onAction={handleConnectAdb}
                   shortcut={{ modifiers: ["cmd"], key: "a" }}

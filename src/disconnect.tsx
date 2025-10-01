@@ -4,9 +4,9 @@ import { disconnect } from "./utils/applescript";
 export default async function Command() {
   try {
     await closeMainWindow();
-    
+
     const response = await disconnect();
-    
+
     if (response.includes("Disconnected from")) {
       await showHUD("✅ " + response);
     } else if (response.includes("Not connected")) {
@@ -22,4 +22,3 @@ export default async function Command() {
     });
   }
 }
-

@@ -77,10 +77,7 @@ export default function ReplyNotification({ notification, actionName, onSuccess 
         </ActionPanel>
       }
     >
-      <Form.Description
-        title="Reply To"
-        text={`${notification.app} • ${notification.title || "No Title"}`}
-      />
+      <Form.Description title="Reply To" text={`${notification.app} • ${notification.title || "No Title"}`} />
       <Form.Description title="Message" text={notification.body} />
       <Form.TextArea
         id="replyText"

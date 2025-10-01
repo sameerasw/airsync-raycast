@@ -4,9 +4,9 @@ import { launchDesktopMode } from "./utils/applescript";
 export default async function Command() {
   try {
     await closeMainWindow();
-    
+
     const response = await launchDesktopMode();
-    
+
     if (response.success) {
       await showHUD(`🖥️ ${response.message}`);
     } else {

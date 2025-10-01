@@ -4,9 +4,9 @@ import { reconnect } from "./utils/applescript";
 export default async function Command() {
   try {
     await closeMainWindow();
-    
+
     const response = await reconnect();
-    
+
     if (response.includes("Attempting to reconnect")) {
       await showHUD("🔄 " + response);
     } else if (response.includes("No previous device")) {
@@ -22,4 +22,3 @@ export default async function Command() {
     });
   }
 }
-

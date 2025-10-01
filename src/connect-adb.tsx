@@ -4,9 +4,9 @@ import { connectAdb } from "./utils/applescript";
 export default async function Command() {
   try {
     await closeMainWindow();
-    
+
     const response = await connectAdb();
-    
+
     // Check for specific error messages
     if (response === "Connected") {
       await showHUD(`✅ ${response}`);

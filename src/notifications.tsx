@@ -140,9 +140,9 @@ export default function Command() {
           : Icon.Bell;
 
         // Find reply action
-        const replyAction = notification.actions?.find(action => action.type === "reply");
+        const replyAction = notification.actions?.find((action) => action.type === "reply");
         // Find button actions
-        const buttonActions = notification.actions?.filter(action => action.type === "button") || [];
+        const buttonActions = notification.actions?.filter((action) => action.type === "button") || [];
 
         return (
           <List.Item
@@ -150,18 +150,20 @@ export default function Command() {
             icon={appIcon}
             title={`${notification.app} • ${notification.title || "No Title"}`}
             subtitle={notification.body}
-            detail={
-              <List.Item.Detail
-                markdown={`# ${notification.title || "No Title"}\n\n${notification.body}`}
-              />
-            }
+            detail={<List.Item.Detail markdown={`# ${notification.title || "No Title"}\n\n${notification.body}`} />}
             actions={
               <ActionPanel>
                 {replyAction && (
                   <Action.Push
                     title={replyAction.name}
                     icon={Icon.Message}
-                    target={<ReplyNotification notification={notification} actionName={replyAction.name} onSuccess={revalidate} />}
+                    target={
+                      <ReplyNotification
+                        notification={notification}
+                        actionName={replyAction.name}
+                        onSuccess={revalidate}
+                      />
+                    }
                   />
                 )}
                 {buttonActions.map((action) => (
@@ -181,8 +183,8 @@ export default function Command() {
                   />
                 </ActionPanel.Section>
                 <ActionPanel.Section>
-                  <Action.CopyToClipboard 
-                    title="Copy Body" 
+                  <Action.CopyToClipboard
+                    title="Copy Body"
                     content={notification.body}
                     shortcut={{ modifiers: ["cmd"], key: "c" }}
                   />
@@ -191,11 +193,11 @@ export default function Command() {
                     content={`${notification.title}\n${notification.body}\n\nApp: ${notification.app}`}
                     shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
                   />
-                  <Action 
-                    title="Refresh" 
-                    onAction={revalidate} 
-                    icon={Icon.ArrowClockwise} 
-                    shortcut={{ modifiers: ["cmd"], key: "r" }} 
+                  <Action
+                    title="Refresh"
+                    onAction={revalidate}
+                    icon={Icon.ArrowClockwise}
+                    shortcut={{ modifiers: ["cmd"], key: "r" }}
                   />
                 </ActionPanel.Section>
               </ActionPanel>
