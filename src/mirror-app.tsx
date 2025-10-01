@@ -1,10 +1,21 @@
-import { Action, ActionPanel, List, Icon, showToast, Toast, Color } from "@raycast/api";
+import { Action, ActionPanel, List, Icon, showToast, Toast, Color, closeMainWindow } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import { getApps, mirrorApp, App } from "./utils/applescript";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Command() {
   const { data: appsData, isLoading, error, revalidate } = usePromise(getApps);
+
+  // Show toast and close window on error
+  useEffect(() => {
+    if (error) {
+      showToast({
+        style: Toast.Style.Failure,
+        title: "Failed to get apps",
+        message: error.message,
+      });
+    }
+  }, [error]);
   const [selectedApp, setSelectedApp] = useState<string | null>(null);
 
   const handleMirrorApp = async (app: App) => {
@@ -35,23 +46,6 @@ export default function Command() {
       setSelectedApp(null);
     }
   };
-
-  if (error) {
-    return (
-      <List>
-        <List.EmptyView
-          icon={Icon.ExclamationMark}
-          title="Error"
-          description={error.message}
-          actions={
-            <ActionPanel>
-              <Action title="Retry" onAction={revalidate} icon={Icon.ArrowClockwise} />
-            </ActionPanel>
-          }
-        />
-      </List>
-    );
-  }
 
   if (isLoading) {
     return <List isLoading={true} searchBarPlaceholder="Loading apps..." />;

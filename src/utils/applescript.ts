@@ -125,10 +125,16 @@ export async function launchMirroring(): Promise<MirrorResponse> {
 export async function getApps(): Promise<AppsResponse> {
   try {
     const result = await runAppleScript('tell application "AirSync" to get apps');
-    return JSON.parse(result);
+    // Try to parse as JSON, if it fails, the result might be an error message
+    try {
+      return JSON.parse(result);
+    } catch (parseError) {
+      // If parsing fails, throw the actual message from AirSync
+      throw new Error(result || "Failed to get apps. Make sure AirSync is running.");
+    }
   } catch (error) {
     console.error("Failed to get apps:", error);
-    throw new Error("Failed to get apps. Make sure AirSync is running.");
+    throw error instanceof Error ? error : new Error("Failed to get apps. Make sure AirSync is running.");
   }
 }
 
