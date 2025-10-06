@@ -2,6 +2,8 @@
 
 Control your AirSync macOS app directly from Raycast with this powerful extension.
 
+<a title="Install airsync Raycast Extension" href="https://www.raycast.com/sameerasw/airsync"><img src="https://www.raycast.com/sameerasw/airsync/install_button@2x.png?v=1.1" height="64" style="height: 64px;" alt=""></a>
+
 ## Features
 
 This extension provides 9 commands to interact with your AirSync app:
